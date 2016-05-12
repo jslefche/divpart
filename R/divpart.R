@@ -1,7 +1,7 @@
 #' @title divpart
 #'
 #' @description
-#' \code{divcomp} Hierarchical diversity partitioning
+#' \code{divpart} Hierarchical diversity partitioning
 #'
 #' @author Jon Lefcheck
 #'
@@ -20,9 +20,13 @@ divpart = function(mat, groups = NULL, dissim = NULL, q = 0) {
   if(is.null(groups)) groups = matrix(1:nrow(mat), nrow = nrow(mat))
 
   # Create groups at lowest level if not already present in groups
-  if(!any(sapply(groups, function(x) length(unique(x))) == nrow(mat)))
+  if(!any(sapply(groups, function(x) length(unique(x))) == nrow(mat))) {
 
     groups = cbind(groups, matrix(1:nrow(mat), nrow = nrow(mat)))
+
+    colnames(groups)[ncol(groups)] = "ID"
+
+  }
 
   # Organize groups from most levels to fewest
   groups. = sapply(colnames(groups), function(x) length(unique(groups[, x])))
@@ -36,29 +40,25 @@ divpart = function(mat, groups = NULL, dissim = NULL, q = 0) {
   do.call(rbind, lapply(length(groups.l):2, function(i) {
 
     # Calculate local diversity for each group in the level below the current group
-    alpha = if(i - 1 == 1) {
-
-        divcomp(mat, dissim = dissim, q = q)
-
-      } else {
-
-        sapply(unique(groups.l[[i - 1]]), function(j) {
+    alpha = sapply(unique(groups.l[[i - 1]]), function(j) {
 
           # Subset data for group
-          mat. = mat[j == groups.l[[i - 1]], ]
+          mat. = mat[j == groups.l[[i - 1]], , drop = FALSE]
 
           # Summarize at the group level
-          mat. = t(as.matrix(colSums(mat.)))
+          if(nrow(mat.) > 1) mat. = t(as.matrix(colSums(mat.)))
 
           # Calculate local diversity
           divcomp(mat., dissim = dissim, q = q)
 
-        } )
-
-        }
+          } )
 
     # Get mean alpha diversity
-    mean.alpha = mean(alpha, na.rm = TRUE)
+    mean.alpha = sapply(unique(groups.l[[i]]), function(j) {
+
+      mean(alpha[names(alpha) %in% unique(groups[groups[, i] == j, i - 1])], na.rm = TRUE)
+
+    } )
 
     # Calculate gamma diversity across groups for the current level
     gamma = sapply(unique(groups.l[[i]]), function(j) {
@@ -67,7 +67,7 @@ divpart = function(mat, groups = NULL, dissim = NULL, q = 0) {
       mat. = mat[j == groups.l[[i]], ]
 
       # Summarize at the group level
-      mat. = t(as.matrix(colSums(mat.)))
+      if(nrow(mat.) > 1) mat. = t(as.matrix(colSums(mat.)))
 
       # Calculate local diversity
       divcomp(mat., dissim = dissim, q = q)
