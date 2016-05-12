@@ -16,7 +16,7 @@ library(divpart)
 # Create sample-by-species abundance matrix
 set.seed(9) 
 
-mat = matrix(rpois(100, 1), nrow = 20, ncol = 10)
+mat = matrix(rpois(100, 3), nrow = 20, ncol = 10)
 
 rownames(mat) = paste0("plot", 1:20)
 colnames(mat) = paste0("species", 1:10)
@@ -25,6 +25,6 @@ colnames(mat) = paste0("species", 1:10)
 groups = data.frame(plot = 1:nrow(mat), subsite = rep(letters[1:4], 5), site = rep(letters[1:2], each = 10), region = "A")
 
 # Run diversity partitioning
-divpart(mat, groups, q = 1)
+lapply(0:2, function(i) divpart(mat, groups, q = i))
 
 ```
