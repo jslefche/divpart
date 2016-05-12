@@ -1,3 +1,16 @@
+#' @title divcomp
+#' 
+#' @description 
+#' \code{divcomp} Calculate diversity of order q
+#' 
+#' @author Jon Lefcheck
+#' 
+#' @param mat, a sample (rows) - by - species (columns) abundance matrix
+#' @param dissim, a species-by-species dissimilarity matrix. If absent, uses taxonomic dissimilarities (0, 1)
+#' @param q, order of diversity. 0 = species richness, 1 = Shannon, 2 = Simpson
+#' 
+#' @return Returns a vector of diversity values corresponding to each sample
+
 divcomp = function(mat, dissim = NULL, q = 0) {
   
   # Relativize abundance matrix
