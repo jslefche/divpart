@@ -1,5 +1,5 @@
 Package: divpart
-Title: What the Package Does (one line, title case)
+Title: Hierarhical diversity partitioning using effective numbers
 Version: 0.1
 Authors@R: person("Jonathan", "Lefcheck", email = "jslefche@vims.edu", role = c("aut", "cre"))
 Description: Hierarchical diversity partitioning using effective numbers
