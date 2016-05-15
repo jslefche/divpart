@@ -56,7 +56,7 @@ divpart = function(mat, groups = NULL, dissim = NULL, q = 0) {
     # Get mean alpha diversity
     mean.alpha = sapply(unique(groups.l[[i]]), function(j) {
 
-      mean(alpha[names(alpha) %in% unique(groups[groups[, i] == j, i - 1])], na.rm = TRUE)
+      mean(alpha[groups[groups[, i] == j, i - 1]], na.rm = TRUE)
 
     } )
 
@@ -91,6 +91,31 @@ divpart = function(mat, groups = NULL, dissim = NULL, q = 0) {
     )
 
     rownames(dat) = NULL
+
+    # Get plot-level mean alpha
+    if(i == 2) {
+
+      # Get plot-level diversity
+      alpha. = mean(divcomp(mat, dissim = dissim, q = q), na.rm = T)
+
+      gamma. = sum(colSums(mat) > 0)
+
+      beta.add. = gamma. - alpha.
+
+      beta.mult. = gamma. / alpha.
+
+      # Add to dat
+      dat = rbind(dat,
+            data.frame(
+              level = colnames(groups)[i - 1],
+              name = paste0("1:", nrow(mat)),
+              alpha = alpha.,
+              gamma = NA, #gamma.,
+              beta.add = NA, #beta.add.,
+              beta.mult = NA #beta.mult.)
+            )
+
+    }
 
     return(dat)
 
