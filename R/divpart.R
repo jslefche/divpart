@@ -112,7 +112,7 @@ divpart = function(mat, groups = NULL, dissim = NULL, q = 0) {
               alpha = alpha.,
               gamma = NA, #gamma.,
               beta.add = NA, #beta.add.,
-              beta.mult = NA #beta.mult.)
+              beta.mult = NA) #beta.mult.)
             )
 
     }
