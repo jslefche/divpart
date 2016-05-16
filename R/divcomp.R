@@ -31,7 +31,7 @@ divcomp = function(mat, dissim = NULL, q = 0) {
     
   }
   
-  if(ncol(mat) != nrow(dissim)) stop("Number of rows must match between mat and groups")
+  if(ncol(p) != nrow(dissim)) stop("Number of rows must match between mat and groups")
   
   # Get similarity matrix from dissimilarity matrix
   Z = 1 - dissim
