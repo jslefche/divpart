@@ -20,7 +20,7 @@ divpart = function(mat, groups = NULL, dissim = NULL, q = 0) {
   if(is.null(groups)) groups = matrix(1:nrow(mat), nrow = nrow(mat))
 
   # Create groups at lowest level if not already present in groups
-  if(!any(sapply(groups, function(x) length(unique(x))) == nrow(mat))) {
+  if(!any(apply(groups, 2, function(x) length(unique(x)) == nrow(mat)))) {
 
     groups = cbind(groups, matrix(1:nrow(mat), nrow = nrow(mat)))
 
@@ -43,7 +43,7 @@ divpart = function(mat, groups = NULL, dissim = NULL, q = 0) {
     alpha = sapply(unique(groups.l[[i - 1]]), function(j) {
 
           # Subset data for group
-          mat. = mat[j == groups.l[[i - 1]], , drop = FALSE]
+          mat. = mat[which(j == groups.l[[i - 1]]), , drop = FALSE]
 
           # Summarize at the group level
           if(nrow(mat.) > 1) mat. = t(as.matrix(colSums(mat.)))
@@ -66,11 +66,14 @@ divpart = function(mat, groups = NULL, dissim = NULL, q = 0) {
       # Subset data for group
       mat. = mat[j == groups.l[[i]], ]
 
+      # Calculate relative abundance for each site
+      mat.rel. = mat./rowSums(mat., na.rm = TRUE)
+
       # Summarize at the group level
-      if(nrow(mat.) > 1) mat. = t(as.matrix(colSums(mat.)))
+      if(nrow(mat.rel.) > 1) mat.rel. = t(as.matrix(colMeans(mat.rel.)))
 
       # Calculate local diversity
-      divcomp(mat., dissim = dissim, q = q)
+      divcomp(mat.rel., dissim = dissim, q = q)
 
       } )
 
@@ -85,9 +88,9 @@ divpart = function(mat, groups = NULL, dissim = NULL, q = 0) {
       level = colnames(groups)[i],
       name = names(gamma),
       alpha = mean.alpha,
-      gamma = gamma,
       beta.add = beta.add,
-      beta.mult = beta.mult
+      beta.mult = beta.mult,
+      gamma = gamma
     )
 
     rownames(dat) = NULL
@@ -110,9 +113,9 @@ divpart = function(mat, groups = NULL, dissim = NULL, q = 0) {
               level = colnames(groups)[i - 1],
               name = paste0("1:", nrow(mat)),
               alpha = alpha.,
-              gamma = NA, #gamma.,
-              beta.add = NA, #beta.add.,
-              beta.mult = NA) #beta.mult.)
+              beta.add = NA,
+              beta.mult = NA,
+              gamma = NA)
             )
 
     }
